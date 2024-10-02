@@ -1,0 +1,652 @@
+{
+  "openapi" : "3.0.3",
+  "info" : {
+    "title" : "Index Card API",
+    "description" : "This is a simple server for loading and saving index cards",
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "https://dev.index-cards.com/v1",
+    "description" : "Dev Server"
+  }, {
+    "url" : "https://prod.index-cards.com/v1",
+    "description" : "Prod Server"
+  } ],
+  "tags" : [ {
+    "name" : "users",
+    "description" : "Operations about the user"
+  }, {
+    "name" : "index-cards",
+    "description" : "Operations about index cards"
+  }, {
+    "name" : "collections",
+    "description" : "Operations about the collections"
+  } ],
+  "paths" : {
+    "/users" : {
+      "post" : {
+        "tags" : [ "users" ],
+        "summary" : "Create a new user",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/users_body"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully created new user"
+          },
+          "409" : {
+            "description" : "Username already exists"
+          },
+          "500" : {
+            "description" : "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/{userId}" : {
+      "get" : {
+        "tags" : [ "users" ],
+        "summary" : "Get information about the user",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Sucessful pull of user info",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "404" : {
+            "description" : "User not found"
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "users" ],
+        "summary" : "Delete user",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "successfully deleted user"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "404" : {
+            "description" : "user not found"
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "patch" : {
+        "tags" : [ "users" ],
+        "summary" : "update selected user",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "New information to update user",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/users_userId_body"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "sucessfully updated user"
+          },
+          "401" : {
+            "description" : "Access token missing or invalid"
+          },
+          "404" : {
+            "description" : "selected user not found"
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/index-cards/{userId}" : {
+      "get" : {
+        "tags" : [ "index-cards" ],
+        "summary" : "get all cards of the logged in user",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successfully pulled the users cards",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Index-card"
+                  },
+                  "x-content-type" : "application/json"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/index-cards/{cardId}" : {
+      "get" : {
+        "tags" : [ "index-cards" ],
+        "summary" : "Get a specific card from the database",
+        "parameters" : [ {
+          "name" : "cardId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully pulled the requested card",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Index-card"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Card not found"
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "index-cards" ],
+        "summary" : "delete specified card",
+        "parameters" : [ {
+          "name" : "cardId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Successfully deleted card"
+          },
+          "404" : {
+            "description" : "Card not found"
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "patch" : {
+        "tags" : [ "index-cards" ],
+        "summary" : "update specified card",
+        "parameters" : [ {
+          "name" : "cardId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "New information to update card",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Index-card"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successfully updated selected card",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Index-card"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/index-cards/{collectionId}/index-cards" : {
+      "get" : {
+        "tags" : [ "index-cards" ],
+        "summary" : "get all cards from the collection",
+        "parameters" : [ {
+          "name" : "collectionId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully pulled all cards from collection",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Index-card"
+                  },
+                  "x-content-type" : "application/json"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "index-cards" ],
+        "summary" : "Create a new index card for the selected collection",
+        "parameters" : [ {
+          "name" : "collectionId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "content of the index card",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Index-card"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successfully created card",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Index-card"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error"
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/collections/{userId}" : {
+      "get" : {
+        "tags" : [ "collections" ],
+        "summary" : "Get all collections of user",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully pulled all collections",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Collections"
+                  },
+                  "x-content-type" : "application/json"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "collections" ],
+        "summary" : "Create a new collection",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "the new collection",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Collections"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Successfully created new collection",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error"
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/collections/{collectionId}" : {
+      "delete" : {
+        "tags" : [ "collections" ],
+        "summary" : "delete the selected collection",
+        "parameters" : [ {
+          "name" : "collectionId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "successfully deleted collection"
+          },
+          "404" : {
+            "description" : "collection not found"
+          },
+          "500" : {
+            "description" : "internal server error"
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "User" : {
+        "type" : "object",
+        "properties" : {
+          "userName" : {
+            "type" : "string",
+            "example" : "Max Mustermann"
+          },
+          "experienceLevel" : {
+            "type" : "integer",
+            "example" : 0
+          },
+          "points" : {
+            "type" : "integer",
+            "example" : 0
+          }
+        },
+        "description" : "Model for User",
+        "example" : {
+          "experienceLevel" : 0,
+          "userName" : "Max Mustermann",
+          "points" : 0
+        },
+        "xml" : {
+          "name" : "user"
+        }
+      },
+      "Index-card" : {
+        "type" : "object",
+        "properties" : {
+          "cardId" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          },
+          "collectionId" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          },
+          "frontSide" : {
+            "type" : "string",
+            "example" : "What is the capital of Portugal?"
+          },
+          "frontFormat" : {
+            "type" : "string",
+            "example" : "latin",
+            "enum" : [ "latin", "hiragana", "katakana", "kanji" ]
+          },
+          "backSide" : {
+            "type" : "string",
+            "example" : "Lisbon"
+          },
+          "backFormat" : {
+            "type" : "string",
+            "example" : "latin",
+            "enum" : [ "latin", "hiragana", "katakana", "kanji" ]
+          }
+        },
+        "description" : "Model for the index cards",
+        "example" : {
+          "backFormat" : "latin",
+          "backSide" : "Lisbon",
+          "cardId" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243",
+          "frontFormat" : "latin",
+          "frontSide" : "What is the capital of Portugal?",
+          "collectionId" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+        }
+      },
+      "Collections" : {
+        "type" : "object",
+        "properties" : {
+          "collectionId" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          },
+          "userId" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243"
+          },
+          "collectionName" : {
+            "type" : "string",
+            "example" : "Geography"
+          },
+          "numberOfCards" : {
+            "type" : "integer",
+            "example" : 20
+          }
+        },
+        "description" : "Model for a collection of index-cards",
+        "example" : {
+          "numberOfCards" : 20,
+          "collectionId" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243",
+          "userId" : "9666e8bf-6f37-44d1-aab4-f2faaf6da243",
+          "collectionName" : "Geography"
+        }
+      },
+      "users_body" : {
+        "type" : "object",
+        "properties" : {
+          "username" : {
+            "type" : "string",
+            "example" : "Max Mustermann"
+          },
+          "password" : {
+            "type" : "string",
+            "format" : "password",
+            "example" : "Password"
+          }
+        }
+      },
+      "users_userId_body" : {
+        "type" : "object",
+        "properties" : {
+          "username" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string",
+            "format" : "password"
+          }
+        }
+      },
+      "inline_response_200" : {
+        "type" : "object",
+        "properties" : {
+          "collectionName" : {
+            "type" : "string",
+            "example" : "Geography"
+          }
+        },
+        "example" : {
+          "collectionName" : "Geography"
+        }
+      }
+    },
+    "securitySchemes" : {
+      "bearerAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
+      }
+    }
+  }
+}
