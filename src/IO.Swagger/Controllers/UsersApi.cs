@@ -53,8 +53,7 @@ namespace IO.Swagger.Controllers
             //TODO: Uncomment the next line to return response 500 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(500);
 
-            var test = new UserOutputDTO(body.Username, body.Password);
-            return Ok(test);
+            return StatusCode(501);
         }
 
         /// <summary>
@@ -95,7 +94,7 @@ namespace IO.Swagger.Controllers
         [Authorize(AuthenticationSchemes = BearerAuthenticationHandler.SchemeName)]
         [ValidateModelState]
         [SwaggerOperation("UsersUserIdGet")]
-        [SwaggerResponse(statusCode: 200, type: typeof(UserInputDTO), description: "Sucessful pull of user info")]
+        [SwaggerResponse(statusCode: 200, type: typeof(User), description: "Sucessful pull of user info")]
         public virtual IActionResult UsersUserIdGet([FromRoute][Required]Guid? userId)
         { 
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
@@ -110,8 +109,8 @@ namespace IO.Swagger.Controllers
             exampleJson = "{\n  \"experienceLevel\" : 0,\n  \"userName\" : \"Max Mustermann\",\n  \"points\" : 0\n}";
             
                         var example = exampleJson != null
-                        ? JsonConvert.DeserializeObject<UserInputDTO>(exampleJson)
-                        : default(UserInputDTO);            //TODO: Change the data returned
+                        ? JsonConvert.DeserializeObject<User>(exampleJson)
+                        : default(User);            //TODO: Change the data returned
             return new ObjectResult(example);
         }
 
