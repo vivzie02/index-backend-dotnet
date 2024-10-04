@@ -20,6 +20,13 @@ namespace IO.Swagger.Security
         /// </summary>
         public const string SchemeName = "Bearer";
 
+        /// <summary>
+        /// BearerAuthenticationHandler
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="logger"></param>
+        /// <param name="encoder"></param>
+        /// <param name="clock"></param>
         public BearerAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
         {
         }
